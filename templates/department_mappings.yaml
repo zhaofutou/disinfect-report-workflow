@@ -1,0 +1,52 @@
+# Department Name Mappings
+# Maps handwritten department names to database sampleLocation values
+# Used by extract_observations.py for fuzzy matching
+#
+# Format:
+#   handwritten_name: database_name
+#
+# Add new mappings as you encounter them in observation sheets.
+
+mappings:
+  # Radiology
+  CT室: 放射科
+  
+  # Ultrasound
+  B超室: 彩超室
+  
+  # Blood collection
+  抽血厅: 抽血室
+  
+  # Vaccination
+  预防接种门诊: 接种门诊
+  
+  # Dentistry
+  牙科: 口腔科
+  
+  # Wards
+  二病室: 照护病房
+  
+  # TCM/Rehabilitation
+  4楼中医室: 针灸康复科
+  针灸治疗科: 针灸康复科
+  
+  # Physiotherapy
+  门诊理疗室: 理疗科
+
+# Common exact matches (no mapping needed):
+# - 内科治疗室
+# - 检验科
+# - 美容科
+# - 理疗室
+# - 手术室
+# - 病房
+# - 病理科
+# - 换药室
+# - 口腔科
+# - 内科病房
+# - 门诊输液室
+
+# Notes:
+# - "门诊" may match "门诊5室" via contains matching
+# - "PCR室" variants usually match via contains matching
+# - "X楼Y室" patterns: check if Y exists in database first

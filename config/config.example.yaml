@@ -1,0 +1,20 @@
+# Supabase Configuration
+# Copy this to config.yaml and fill in your values
+
+supabase:
+  url: "https://YOUR_PROJECT.supabase.co"
+  anon_key: "YOUR_ANON_KEY"
+  service_role_key: "YOUR_SERVICE_ROLE_KEY"
+
+database:
+  host: "aws-0-REGION.pooler.supabase.com"
+  port: 6543
+  name: "postgres"
+  user: "postgres.YOUR_PROJECT_REF"
+  password: "YOUR_DB_PASSWORD"
+
+# File paths (relative to workflow directory)
+paths:
+  event_photos: "../event_deposition"
+  sample_docs: "../sample_info"
+  observation_photos: "../observation_results"

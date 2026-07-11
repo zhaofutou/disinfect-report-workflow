@@ -1,0 +1,29 @@
+# Config with credentials
+config/config.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Data files (large, don't commit)
+../event_deposition/
+../sample_info/
+../observation_results/
+*.jpg
+*.JPG
+*.docx
+*.doc
+*.xlsx
+*.pdf
