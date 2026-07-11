@@ -5,20 +5,21 @@ Usage:
     python3 calculate_results.py              # Calculate for all samples
     python3 calculate_results.py --event 202605017  # Calculate for specific event
 
-Calculation Rules (from AI_AGENT_HANDOVER.md):
+Calculation Rules:
 
 1. Surface samples (桌面, 门把手, etc.):
    result = observation × 10 / sampling_area
-   units: CFU/cm²
-   if observation == 0: result = "< 0.2 CFU/cm²" (threshold)
+   Output: just the number (e.g., "0.7" not "0.7 CFU/cm²")
+   if observation == 0: result = "<0.2"
 
-2. Liquid disinfectant samples (使用中消毒液):
+2. Liquid disinfectant samples (酒精, 消毒剂, 碘伏, 使用中酒精, 使用中消毒剂, 使用中碘伏):
    result = observation × 10
-   units: CFU/mL
+   Output: "{result} CFU/mL(十倍稀释)"
+   if observation == 0: result = "<10 CFU/mL(十倍稀释)"
 
 3. Air samples (comma-separated multiple plates):
    result = average(plates)
-   units: CFU/90mm平皿
+   Output: "{result} CFU/90mm平皿"
 
 4. UV samples (紫外线灯):
    Skipped - these are radiation measurements, not bacteria counts
@@ -29,6 +30,13 @@ import re
 import argparse
 sys.path.insert(0, '.')
 from utils import get_db_connection
+
+# Liquid sample name patterns
+LIQUID_PATTERNS = ['酒精', '消毒剂', '碘伏']
+
+def is_liquid_sample(sample_name):
+    """Check if sample is a liquid disinfectant."""
+    return any(p in sample_name for p in LIQUID_PATTERNS)
 
 def calculate_result(sample_name, sample_area, observation):
     """Calculate bacterial colony result based on sample type."""
@@ -56,31 +64,30 @@ def calculate_result(sample_name, sample_area, observation):
     except:
         return None
     
-    # Determine sample type
-    is_liquid = sample_area and 'ml' in str(sample_area).lower()
-    is_air = '空气' in sample_name
-    
-    if is_liquid:
+    # Liquid disinfectant samples
+    if is_liquid_sample(sample_name):
         result = obs * 10
-        if result == 0:
-            return "0 CFU/mL"
-        return f"{result:.0f} CFU/mL"
+        if obs == 0:
+            return "<10 CFU/mL(十倍稀释)"
+        return f"{result:.0f} CFU/mL(十倍稀释)"
     
-    elif is_air:
+    # Air samples (single value)
+    if '空气' in sample_name:
         return f"{obs:.1f} CFU/90mm平皿"
     
-    else:
-        # Surface sample
-        if sample_area:
-            try:
-                area = float(re.search(r'(\d+)', str(sample_area)).group(1))
-                if obs == 0:
-                    return "< 0.2 CFU/cm²"
-                result = obs * 10 / area
-                return f"{result:.1f} CFU/cm²"
-            except:
-                pass
-        return f"{obs}"
+    # Surface samples
+    if sample_area:
+        try:
+            area = float(re.search(r'(\d+)', str(sample_area)).group(1))
+            if obs == 0:
+                return "<0.2"
+            result = obs * 10 / area
+            return f"{result:.1f}"
+        except:
+            pass
+    
+    # Fallback
+    return f"{obs}"
 
 def main():
     parser = argparse.ArgumentParser(description='Calculate bacterial colony results')
